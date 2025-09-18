@@ -6,7 +6,7 @@ suggestions, ensuring strategic consistency and alignment with game-specific con
 This repo is intended to serve as a foundation with which you can reproduce the results of the experiments detailed in our paper 
 
 ## Running Experiments
-# Environment
+### Environment
 Nella cartella `classes` sono presenti tutti i file relativi all'implementazione dell'NPC (agent.py), e dell'environment di gioco (environment.py - game.py - inventory.py - magic.py) per eventuali modifiche ai settaggi definiti nell'articolo.
 
 *Reviewer*
