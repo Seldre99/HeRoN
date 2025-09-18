@@ -9,17 +9,17 @@ This repo is intended to serve as a foundation with which you can reproduce the 
 ### Environment
 Nella cartella `classes` sono presenti tutti i file relativi all'implementazione dell'NPC (agent.py), e dell'environment di gioco (environment.py - game.py - inventory.py - magic.py) per eventuali modifiche ai settaggi definiti nell'articolo.
 
-*Reviewer*
+### Reviewer
 Tutti i file per addestrare il Reviewer sono presenti nella cartella `reviewer`, per creare il proprio dataset consultare la cartella `dataset Reviewer`. Una volta addestrato il Reviewer, è possibile utilizzarlo nei file HeRoN inserendo il tokenizer nella stringa `AutoTokenizer.from_pretrained()`.
 
-**Setup LLMs for Helper**
+### Setup LLMs for Helper
 Per testare gli LLM per Helper, è necessario installare [LM Studio](https://lmstudio.ai/), inserire la stringa di SERVER_API_HOST ed inserire il nome del LLM da testare nella stringa  `model = client.llm.model("")` presente in tutti i file di training della cartella `HeRoN`.
 
-**Training NPC**
+### Training NPC
 Le configurazioni testate per addestrare l'NPC sono presenti nella cartella `HeRoN`
 
-**Testing NPC**
+### Testing NPC
 
 
-## Citation
+### Citation
 If you find our work helpful, we would appreciate if you cite it:
