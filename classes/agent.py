@@ -38,15 +38,11 @@ class DQNAgent:
         return model
 
     def load(self, path_prefix):
-        self.model = load_model(f"C:/Users/andre/OneDrive/Desktop/Università/tesi magistrale/dqn/model/{path_prefix}.keras")
-        memory_path = f"C:/Users/andre/OneDrive/Desktop/Università/tesi magistrale/dqn/model/{path_prefix}_memory.pkl"
-        #epsilon_path = f"C:/Users/andre/OneDrive/Desktop/Università/tesi magistrale/dqn/model/{path_prefix}_epsilon.txt"
+        self.model = load_model(f"/{path_prefix}.keras") # enter model path
+        memory_path = f"/{path_prefix}_memory.pkl" # enter model path
         if os.path.exists(memory_path):
             with open(memory_path, 'rb') as f:
                 self.memory = pickle.load(f)
-        #if os.path.exists(epsilon_path):
-       #     with open(epsilon_path, 'r') as f:
-       #         self.epsilon = float(f.read())
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
@@ -57,9 +53,8 @@ class DQNAgent:
             return random.choice(valid_actions)
         act_values = self.model.predict(state)[0]  # shape: (9,)
         if len(valid_actions) < 9:
-            # Maschera i valori non validi
-            masked_q_values = np.full_like(act_values, -np.inf)  # inizializza con -inf
-            masked_q_values[valid_actions] = act_values[valid_actions]  # copia solo i Q validi
+            masked_q_values = np.full_like(act_values, -np.inf)  
+            masked_q_values[valid_actions] = act_values[valid_actions] 
             return np.argmax(masked_q_values)
 
         return np.argmax(act_values)
@@ -84,10 +79,10 @@ class DQNAgent:
             self.epsilon *= self.epsilon_decay
 
     def save(self, path_prefix):
-        self.model.save(f"C:/Users/andre/OneDrive/Desktop/Università/tesi magistrale/dqn/model/{path_prefix}.keras")
-        with open(f"C:/Users/andre/OneDrive/Desktop/Università/tesi magistrale/dqn/model/{path_prefix}_memory.pkl", 'wb') as f:
+        self.model.save(f"/{path_prefix}.keras") # enter model path
+        with open(f"/{path_prefix}_memory.pkl", 'wb') as f: # enter model path
             pickle.dump(self.memory, f)
-        with open(f"C:/Users/andre/OneDrive/Desktop/Università/tesi magistrale/dqn/model/{path_prefix}_epsilon.txt", 'w') as f:
+        with open(f"/{path_prefix}_epsilon.txt", 'w') as f: # enter model path
             f.write(str(self.epsilon))
 
 '''
@@ -108,4 +103,5 @@ class DQNAgent:
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 '''
+
 
