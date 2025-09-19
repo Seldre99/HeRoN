@@ -10,7 +10,7 @@ This repo is intended to serve as a foundation with which you can reproduce the 
 The `classes` folder contains all the files related to the implementation of the NPC (`agent.py`) and the game environment (`environment.py` - `game.py` - `inventory.py` - `magic.py`) for any changes to the settings defined in the article.
 
 ### Reviewer
-All files for training the Reviewer are located in the `reviewer` folder. To create your own dataset, refer to the `dataset Reviewer` folder. Once the Reviewer has been trained, you can use it in HeRoN files by inserting the tokeniser in the string `AutoTokenizer.from_pretrained()` and the model in the string `T5ForConditionalGeneration.from_pretrained`..
+All files for training the Reviewer are located in the `reviewer` folder. To create your own dataset, refer to the `dataset Reviewer` folder. Once the Reviewer has been trained, you can use it in HeRoN files by inserting the tokeniser in the string `AutoTokenizer.from_pretrained()` and the model in the string `T5ForConditionalGeneration.from_pretrained`.
 
 ### Setup LLMs for Helper
 To test LLMs for Helper, you need to install [LM Studio](https://lmstudio.ai/), enter the SERVER_API_HOST string and enter the name of the LLM to be tested in the string `model = client.llm.model(‘’)` present in all training files in the `HeRoN` folder.
