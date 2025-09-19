@@ -35,6 +35,7 @@ def map_action(action):
 
 # Main loop with training
 def train_dqn(episodes, batch_size=32, load_model_path=None):
+    #environment settings
     player_spells = [fire, thunder, blizzard, meteor, cura]
     player_items = [{"item": potion, "quantity": 3}, {"item": grenade, "quantity": 2},
                     {"item": hielixer, "quantity": 1}]
@@ -45,6 +46,7 @@ def train_dqn(episodes, batch_size=32, load_model_path=None):
     enemies = [enemy1]
 
     env = BattleEnv(players, enemies)
+    #NPC
     agent = DQNAgent(env.state_size, env.action_size, load_model_path)
 
     rewards_per_episode = []
@@ -107,15 +109,15 @@ def train_dqn(episodes, batch_size=32, load_model_path=None):
         rewards_per_episode.append(total_reward)
         agent_moves_per_episode.append(moves)
         action_scores.append(np.mean(match_score))
-    print("Media delle ricompense: ", np.mean(rewards_per_episode))
-    print("Media delle mosse: ", np.mean(agent_moves_per_episode))
-    print("Media score mosse: ", np.mean(action_scores))
+    print("Average rewards: ", np.mean(rewards_per_episode))
+    print("Average moves: ", np.mean(agent_moves_per_episode))
+    print("Average move score: ", np.mean(action_scores))
 
     #if (e + 1) % 200 == 0:
     #    save_path = f"model_dqn_episode_{e + 1}"
     #    print(f"Saving model to {save_path}...")
     #    agent.save(save_path)
-    agent.save(f"model_dqn_episode_1000")
+    agent.save("") # save the agent model
 
     #append_csv("reward_per_episode.csv", rewards_per_episode, "Reward")
     #append_csv("agent_wins.csv", agent_wins, "Wins")
@@ -136,7 +138,6 @@ def plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, match_sc
     plt.savefig("Train_reward_DQN.png")
 
     plt.figure(figsize=(8, 6))
-    # Calcoliamo le vittorie cumulative
     cumulative_agent_wins = np.cumsum(agent_wins)
     cumulative_enemy_wins = np.cumsum(enemy_wins)
 
@@ -211,4 +212,5 @@ if __name__ == "__main__":
     # Train the agent
     rewards, agent_wins, enemy_wins, moves, success_rate, match_score = train_dqn(episodes=1000)
     plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, match_score)
+
     export_success_rate(success_rate)
