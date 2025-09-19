@@ -13,7 +13,7 @@ from classes.instructor_agent import InstructorAgent
 from transformers import AutoTokenizer, T5ForConditionalGeneration
 import torch
 
-SERVER_API_HOST = "http://127.0.0.1:1234" #host for connecting to LM Studio
+SERVER_API_HOST = "http://127.0.0.1:1234" #host for connecting to LM Studio, if it does not work insert the string localhost:1234
 
 lms.get_default_client(SERVER_API_HOST)
 
@@ -127,13 +127,13 @@ def train_dqn(episodes, batch_size=32):
                     llm_response = str(llm_response)
                     llm_response = re.sub(r"<think>.*?</think>", "", llm_response, flags=re.DOTALL).strip()
                     print("NPC Response: ", llm_response)
-                    response = instructor_agent.generate_suggestion(game_description, llm_response)
+                    response = instructor_agent.generate_suggestion(game_description, llm_response) # Reviewer suggestion
                     print("\nReviewer response: ", response)
 
                     revise = f"Given the game state '{game_description}'. Your initial response was '{llm_response}'. Considering " \
                              f"this suggestion '{response}', rephrase your answer. Write only the chosen action in square brackets and explain your reasoning briefly, max 50 words. /no_think"
 
-                    new_llm_response = model.respond(revise)
+                    new_llm_response = model.respond(revise) # Final Helper response
 
                     new_llm_response = str(new_llm_response)
                     new_llm_response = re.sub(r"<think>.*?</think>", "", new_llm_response, flags=re.DOTALL).strip()
@@ -276,3 +276,4 @@ if __name__ == "__main__":
     plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, action_score)
 
     export_success_rate(success_rate)
+
