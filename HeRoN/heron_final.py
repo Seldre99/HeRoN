@@ -209,11 +209,11 @@ def train_dqn(episodes, batch_size=32):
         mean_suggestion.append(suggestion)
 
     agent.save("") # save the agent model
-    print("Media delle ricompense: ", np.mean(rewards_per_episode))
-    print("Media delle mosse: ", np.mean(agent_moves_per_episode))
-    print("Media score mosse: ", np.mean(action_scores))
-    print("Allucinazioni: ", allucination)
-    print("Numero di suggerimenti per partita: ", np.mean(mean_suggestion))
+    print("Average rewards: ", np.mean(rewards_per_episode))
+    print("Average moves: ", np.mean(agent_moves_per_episode))
+    print("Average move score: ", np.mean(action_scores))
+    print("Hallucinations: ", allucination)
+    print("Number of suggestions per game: ", np.mean(mean_suggestion))
 
     return rewards_per_episode, agent_wins, enemy_wins, agent_moves_per_episode, success_rate, action_scores
 
@@ -286,3 +286,4 @@ if __name__ == "__main__":
     plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, action_score)
 
     export_success_rate(success_rate)
+
