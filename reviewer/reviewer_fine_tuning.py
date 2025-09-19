@@ -3,15 +3,15 @@ import pandas as pd
 from datasets import Dataset
 from transformers import TrainingArguments, Trainer, T5Tokenizer, T5ForConditionalGeneration
 
-df = pd.read_csv('/Users/macstudio/Desktop/Tesi_magistrale-main/game_scenarios_dataset_2.csv')
+df = pd.read_csv('') # insert dataset
 
 df['input'] = df['prompt'] + " " + df['response']
 
 dataset = Dataset.from_pandas(df[['input', 'instructions']])
 
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-large")
-model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-large").to(device)
+tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-large") # LLM for Reviewer fine tuning
+model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-large").to(device) # LLM for Reviewer fine tuning
 
 def processes_function(examples):
     inputs = [ex for ex in examples['input']]
@@ -30,7 +30,7 @@ train_dataset = train_test_split['train']
 test_dataset = train_test_split['test']
 
 training_args = TrainingArguments(
-    output_dir="/Users/macstudio/Desktop/Tesi_magistrale-main/flan-t5-large-instruction",
+    output_dir="",
     eval_strategy='epoch',
     per_device_train_batch_size=8,
     per_device_eval_batch_size=8,
@@ -38,7 +38,7 @@ training_args = TrainingArguments(
     learning_rate=5e-5,
     weight_decay=0.01,
     save_total_limit=3,
-    logging_dir="/Users/macstudio/Desktop/Tesi_magistrale-main/flan-t5-large-instruction",
+    logging_dir="",
     logging_steps=10
 )
 
@@ -52,5 +52,5 @@ trainer = Trainer(
 
 trainer.train()
 
-model.save_pretrained("/Users/macstudio/Desktop/Tesi_magistrale-main/flan-t5-large-instruction")
-tokenizer.save_pretrained("/Users/macstudio/Desktop/Tesi_magistrale-main/flan-t5-large-instruction")
+model.save_pretrained("") # Insert new Reviewer path
+tokenizer.save_pretrained("") # Insert new Reviewer path
