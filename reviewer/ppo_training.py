@@ -48,10 +48,10 @@ def collators(data):
 
 
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-tokenizer = AutoTokenizer.from_pretrained("/Users/macstudio/Desktop/Tesi_magistrale-main/flan-t5-large-instruction")
-model = AutoModelForSeq2SeqLMWithValueHead.from_pretrained("/Users/macstudio/Desktop/Tesi_magistrale-main/flan-t5-large-instruction").to(device)
+tokenizer = AutoTokenizer.from_pretrained("") # Insert Reviewer fine tuning path
+model = AutoModelForSeq2SeqLMWithValueHead.from_pretrained("").to(device) # Insert Reviewer fine tuning path
 
-df = pd.read_csv('/Users/macstudio/Desktop/Tesi_magistrale-main/game_scenarios_dataset_3.csv')
+df = pd.read_csv('') # Insert dataset
 
 df['input'] = df['prompt'] + " " + df['response']
 
