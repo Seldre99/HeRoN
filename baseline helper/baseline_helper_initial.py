@@ -10,7 +10,7 @@ import re
 import lmstudio as lms
 import action_score as score
 
-SERVER_API_HOST = "http://127.0.0.1:1234"
+SERVER_API_HOST = "http://127.0.0.1:1234" #host for connecting to LM Studio, if it does not work insert the string localhost:1234
 
 lms.get_default_client(SERVER_API_HOST)
 
@@ -63,6 +63,7 @@ def map_action(action):
 
 
 def train_dqn(episodes, batch_size=32):
+    #environment settings
     player_spells = [fire, thunder, blizzard, meteor, cura]
     player_items = [{"item": potion, "quantity": 3}, {"item": grenade, "quantity": 2},
                     {"item": hielixer, "quantity": 1}]
@@ -73,6 +74,7 @@ def train_dqn(episodes, batch_size=32):
     enemies = [enemy1]
 
     env = BattleEnv(players, enemies)
+    #NPC
     agent = DQNAgent(env.state_size, env.action_size, None)
 
 
@@ -96,7 +98,7 @@ def train_dqn(episodes, batch_size=32):
         score.reset_quantity()
         while not done:
             if moves < 5 and e < 600:
-                # Descrizione environment ed azione LLM #
+                #  Description of environment and Helper action #
                 game_description = env.describe_game_state(last_enemy_move)
 
                 input_text = "You are a game asstitant for player." \
@@ -106,19 +108,19 @@ def train_dqn(episodes, batch_size=32):
                              "For spells, the use of MP is necessary, while items have limited availability. " \
                              "The player can have a maximum of 3260 HP and 132 MP, while the enemy 5000 HP and 701 MP. " \
                              f"Given the game state '{game_description}', what is the next action to take? " \
-                             "Write in square brackets only the chosen action, and " \
-                             "explain your reasoning briefly, max 50 words."
+                             "Write only the chosen action in square brackets and " \
+                             "explain your reasoning briefly, max 50 words. /no_think"
 
 
                 with lms.Client() as client:
-                    model = client.llm.model("lmstudio-community/llama-3.3-70b-instruct") #change LLM
+                    model = client.llm.model("lmstudio-community/llama-3.3-70b-instruct") # Helper model
                     llm_response = model.respond(input_text)
 
                 llm_response = str(llm_response)
                 llm_response = re.sub(r"<think>.*?</think>", "", llm_response, flags=re.DOTALL).strip()
                 print(f"LLM response: {llm_response}")
 
-                # Mapping azione dell'LLM per agente di RL con calcolo score azione #
+                #Mapping LLM action to RL agent with action score calculation#
                 action = map_llm_action_to_agent_action(llm_response)
 
                 if action != None:
@@ -127,13 +129,11 @@ def train_dqn(episodes, batch_size=32):
                     if match == "elixer":
                         match = "elixir"
                     total_score = score.calculate_scores(players[0].get_hp(), players[0].get_mp(), enemies[0].get_hp())
-                    #action_scores.append(round(total_score.get(match), 2))
                     match_score.append(round(total_score.get(match), 2))
                 else:
                     action = agent.act(state, env)
                     match = map_action(action)
                     total_score = score.calculate_scores(players[0].get_hp(), players[0].get_mp(), enemies[0].get_hp())
-                    #action_scores.append(round(total_score.get(match)))
                     match_score.append(round(total_score.get(match), 2))
                     allucination += 1
             else:
@@ -142,7 +142,7 @@ def train_dqn(episodes, batch_size=32):
                 total_score = score.calculate_scores(players[0].get_hp(), players[0].get_mp(), enemies[0].get_hp())
                 match_score.append(round(total_score.get(match), 2))
 
-            # Esecuzione azione RL #
+            # Execution of RL action #
             next_state, reward, done, a_win, e_win, last_enemy_move = env.step(action)
             score.updage_quantity(match, players[0].get_mp())
             total_reward += reward
@@ -169,11 +169,11 @@ def train_dqn(episodes, batch_size=32):
         agent_moves_per_episode.append(moves)
         action_scores.append(np.mean(match_score))
 
-    agent.save("model_dqn_llama_episode_1000")
-    print("Media delle ricompense: ", np.mean(rewards_per_episode))
-    print("Media delle mosse: ", np.mean(agent_moves_per_episode))
-    print("Media score mosse: ", np.mean(action_scores))
-    print("Allucinazioni: ", allucination)
+    agent.save("") # save the agent model
+    print("Average rewards: ", np.mean(rewards_per_episode))
+    print("Average moves: ", np.mean(agent_moves_per_episode))
+    print("Average move score: ", np.mean(action_scores))
+    print("Hallucinations: ", allucination)
 
     return rewards_per_episode, agent_wins, enemy_wins, agent_moves_per_episode, success_rate, action_scores
 
@@ -231,7 +231,7 @@ def export_success_rate(success_rate):
         "Episode": list(range(1, len(success_rate) + 1)),
         "Success Rate": success_rate
     })
-    df.to_csv('success_rate_model_llama_1000.csv', index=False)
+    df.to_csv('', index=False)
 
 
 if __name__ == "__main__":
@@ -249,4 +249,5 @@ if __name__ == "__main__":
     # Train the agent
     rewards, agent_wins, enemy_wins, moves, success_rate, action_score = train_dqn(episodes=1000)
     plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, action_score)
+
     export_success_rate(success_rate)
