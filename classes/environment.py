@@ -137,10 +137,9 @@ class BattleEnv:
 
         # Enemy choise (Random)
         for enemy in self.enemies:
-            # MODIFICA: attacco è la scelta di default
             enemy_choice = 'attack'
 
-            # Se ha abbastanza Magic Point può scegliere anche magic
+            # If the enemy has enough magic points, it can also choose magic.
             if enemy.get_mp() >= MIN_SPELL_COST:
                 enemy_choice = random.choice(['attack', 'magic'])
 
@@ -150,7 +149,7 @@ class BattleEnv:
                 target.take_damage(enemy_dmg)
 
             elif enemy_choice == 'magic':
-                spell, magic_dmg = enemy.choose_enemy_spell() # Loop infinito se non ha abbastanza MP
+                spell, magic_dmg = enemy.choose_enemy_spell()
                 enemy_choice = spell.name
                 if enemy.get_mp() >= spell.cost:
                     enemy.reduce_mp(spell.cost)
@@ -163,7 +162,7 @@ class BattleEnv:
         #  Check for battle ended
         if all(p.get_hp() <= 0 for p in self.players):
             self.done = True
-            reward -= 100  # Penalità per la sconfitta
+            reward -= 100
             enemy_win = True
 
         return self.get_state(), reward, self.done, agent_win, enemy_win, enemy_choice
@@ -210,4 +209,5 @@ class BattleEnv:
 
         game_description = state_description + actions_description + last_move_description
         return game_description
+
 
