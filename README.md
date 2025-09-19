@@ -7,19 +7,19 @@ This repo is intended to serve as a foundation with which you can reproduce the 
 
 ## Running Experiments
 ### Environment
-Nella cartella `classes` sono presenti tutti i file relativi all'implementazione dell'NPC (agent.py), e dell'environment di gioco (environment.py - game.py - inventory.py - magic.py) per eventuali modifiche ai settaggi definiti nell'articolo.
+The `classes` folder contains all the files related to the implementation of the NPC (`agent.py`) and the game environment (`environment.py` - `game.py` - `inventory.py` - `magic.py`) for any changes to the settings defined in the article.
 
 ### Reviewer
-Tutti i file per addestrare il Reviewer sono presenti nella cartella `reviewer`, per creare il proprio dataset consultare la cartella `dataset Reviewer`. Una volta addestrato il Reviewer, è possibile utilizzarlo nei file HeRoN inserendo il tokenizer nella stringa `AutoTokenizer.from_pretrained()`.
+All files for training the Reviewer are located in the `reviewer` folder. To create your own dataset, refer to the `dataset Reviewer` folder. Once the Reviewer has been trained, you can use it in HeRoN files by inserting the tokeniser in the string `AutoTokenizer.from_pretrained()` and the model in the string `T5ForConditionalGeneration.from_pretrained`..
 
 ### Setup LLMs for Helper
-Per testare gli LLM per Helper, è necessario installare [LM Studio](https://lmstudio.ai/), inserire la stringa di SERVER_API_HOST ed inserire il nome del LLM da testare nella stringa  `model = client.llm.model("")` presente in tutti i file di training della cartella `HeRoN`.
+To test LLMs for Helper, you need to install [LM Studio](https://lmstudio.ai/), enter the SERVER_API_HOST string and enter the name of the LLM to be tested in the string `model = client.llm.model(‘’)` present in all training files in the `HeRoN` folder.
 
 ### Training NPC
-Le configurazioni testate per addestrare l'NPC sono presenti nella cartella `HeRoN`
+Le configurazioni testate per addestrare l'NPC sono presenti nella cartella `HeRoN`. Once the LLM has been set up for Helper and the Reviewer model has been entered, change the names of the graphs in the `plot_training` function and training can begin. Specifically, DQNAgent is the NPC and IntructorAgent is the Reviewer. The NPC model will be saved in keras format.
 
 ### Testing NPC
-
+To test the trained NPC, use the `testing_model.py` file, enter the model name (i.e. ‘npc_model’) in the DQNAgent string, change the names of the graphs in the `plot_training` function, and start testing.
 
 ### Citation
 If you find our work helpful, we would appreciate if you cite it:
