@@ -13,14 +13,14 @@ from classes.instructor_agent import InstructorAgent
 from transformers import AutoTokenizer, T5ForConditionalGeneration
 import torch
 
-SERVER_API_HOST = "http://127.0.0.1:1234"
+SERVER_API_HOST = "http://127.0.0.1:1234" #host for connecting to LM Studio
 
 lms.get_default_client(SERVER_API_HOST)
 
+#Reviewer model
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-tokenizer_instruction = AutoTokenizer.from_pretrained("/Users/macstudio/Desktop/Tesi_Selice_Andrea/Tesi_magistrale-main/flan-t5-large-ppo")
-model_instruction = T5ForConditionalGeneration.from_pretrained(
-    "/Users/macstudio/Desktop/Tesi_Selice_Andrea/Tesi_magistrale-main/flan-t5-large-ppo").to(device)
+tokenizer_instruction = AutoTokenizer.from_pretrained("")
+model_instruction = T5ForConditionalGeneration.from_pretrained("").to(device)
 
 
 def map_llm_action_to_agent_action(llm_response):
@@ -71,6 +71,7 @@ def map_action(action):
 
 
 def train_dqn(episodes, batch_size=32):
+    #environment settings
     player_spells = [fire, thunder, blizzard, meteor, cura]
     player_items = [{"item": potion, "quantity": 3}, {"item": grenade, "quantity": 2},
                     {"item": hielixer, "quantity": 1}]
@@ -81,8 +82,10 @@ def train_dqn(episodes, batch_size=32):
     enemies = [enemy1]
 
     env = BattleEnv(players, enemies)
+    #NPC
     agent = DQNAgent(env.state_size, env.action_size, None)
 
+    #Reviewer
     instructor_agent = InstructorAgent(model_instruction, tokenizer_instruction, device)
 
     rewards_per_episode = []
@@ -105,7 +108,7 @@ def train_dqn(episodes, batch_size=32):
         score.reset_quantity()
         while not done:
             if moves < 5 and e < 600:
-                # Descrizione environment ed azione LLM #
+                # Description of environment and Helper action #
                 game_description = env.describe_game_state(last_enemy_move)
 
                 input_text = "You are a game asstitant for player." \
@@ -119,7 +122,7 @@ def train_dqn(episodes, batch_size=32):
                              "explain your reasoning briefly, max 50 words. /no_think"
 
                 with lms.Client() as client:
-                    model = client.llm.model("yi-34b-chat")
+                    model = client.llm.model("yi-34b-chat") # Helper model
                     llm_response = model.respond(input_text)
                     llm_response = str(llm_response)
                     llm_response = re.sub(r"<think>.*?</think>", "", llm_response, flags=re.DOTALL).strip()
@@ -168,7 +171,7 @@ def train_dqn(episodes, batch_size=32):
                 total_score = score.calculate_scores(players[0].get_hp(), players[0].get_mp(), enemies[0].get_hp())
                 match_score.append(round(total_score.get(match), 2))
 
-            # Esecuzione azione RL #
+            # Execution of RL action #
             next_state, reward, done, a_win, e_win, last_enemy_move = env.step(action)
             score.updage_quantity(match, players[0].get_mp())
             total_reward += reward
@@ -191,16 +194,16 @@ def train_dqn(episodes, batch_size=32):
                     enemy_wins.append(1)
 
                 success_rate.append(total_agent_wins / (e + 1))
-                print("Vittorie agente: ", agent_wins.count(1), " Vittorie nemico: ", enemy_wins.count(1))
+                print("Agent wins: ", agent_wins.count(1), " Enemy wins: ", enemy_wins.count(1))
         rewards_per_episode.append(total_reward)
         agent_moves_per_episode.append(moves)
         action_scores.append(np.mean(match_score))
 
-    agent.save("model_dqn_Yi_flan_1000")
-    print("Media delle ricompense: ", np.mean(rewards_per_episode))
-    print("Media delle mosse: ", np.mean(agent_moves_per_episode))
-    print("Media score mosse: ", np.mean(action_scores))
-    print("Allucinazioni: ", allucination)
+    agent.save("") # save the agent model
+    print("Average rewards: ", np.mean(rewards_per_episode))
+    print("Average moves: ", np.mean(agent_moves_per_episode))
+    print("Average move score: ", np.mean(action_scores))
+    print("Hallucinations: ", allucination)
 
     return rewards_per_episode, agent_wins, enemy_wins, agent_moves_per_episode, success_rate, action_scores
 
@@ -253,7 +256,7 @@ def export_success_rate(success_rate):
         "Episode": list(range(1, len(success_rate) + 1)),
         "Success Rate": success_rate
     })
-    df.to_csv('success_rate_model_dqn_Yi_flan_1000.csv', index=False)
+    df.to_csv('', index=False)
 
 
 if __name__ == "__main__":
@@ -271,4 +274,5 @@ if __name__ == "__main__":
     # Train the agent
     rewards, agent_wins, enemy_wins, moves, success_rate, action_score = train_dqn(episodes=1000)
     plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, action_score)
+
     export_success_rate(success_rate)
