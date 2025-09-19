@@ -22,7 +22,7 @@ def test_dqn(episodes):
     enemies = [enemy1]
 
     env = BattleEnv(players, enemies)
-    agent = DQNAgent(env.state_size, env.action_size, "model_dqn_Yi_flan_threshold1_1000")
+    agent = DQNAgent(env.state_size, env.action_size, "") # insert NPC's model path
     agent.epsilon = 0.0
 
     rewards_per_episode = []
@@ -72,9 +72,9 @@ def test_dqn(episodes):
         action_scores.append(np.mean(match_score))
 
 
-    print("Media delle ricompense per partita: ", np.mean(rewards_per_episode))
-    print("Media delle mosse per partita: ", np.mean(agent_moves_per_episode))
-    print("Media score mosse per partita: ", np.mean(action_scores))
+    print("Average rewards per game: ", np.mean(rewards_per_episode))
+    print("Average moves per game: ", np.mean(agent_moves_per_episode))
+    print("Average score per match: ", np.mean(action_scores))
 
     return rewards_per_episode, agent_wins, enemy_wins, agent_moves_per_episode, success_rate, action_scores
 
@@ -89,7 +89,6 @@ def plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, match_sc
     plt.savefig("Test_Reward_Yi_flan_threshold1_1000.png")
 
     plt.figure(figsize=(8, 6))
-    # Calcoliamo le vittorie cumulative
     cumulative_agent_wins = np.cumsum(agent_wins)
     cumulative_enemy_wins = np.cumsum(enemy_wins)
 
@@ -131,7 +130,7 @@ def export_success_rate(success_rate):
         "Success Rate": success_rate
     })
 
-    df.to_csv('test_success_rate_model_Yi_flan_threshold1_1000.csv', index=False)
+    df.to_csv('', index=False)
 
 def take_action(action):
     actions = [
@@ -165,4 +164,5 @@ if __name__ == "__main__":
     # Train the agent
     rewards, agent_wins, enemy_wins, moves, success_rate, match = test_dqn(episodes=1000)
     plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, match)
+
     export_success_rate(success_rate)
