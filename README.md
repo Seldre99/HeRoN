@@ -16,7 +16,7 @@ All files for training the Reviewer are located in the `reviewer` folder. To cre
 To test LLMs for Helper, you need to install [LM Studio](https://lmstudio.ai/), enter the SERVER_API_HOST string and enter the name of the LLM to be tested in the string `model = client.llm.model(‘’)` present in all training files in the `HeRoN` folder.
 
 ### Training NPC
-Le configurazioni testate per addestrare l'NPC sono presenti nella cartella `HeRoN`. Once the LLM has been set up for Helper and the Reviewer model has been entered, change the names of the graphs in the `plot_training` function and the name of the CSV file relating to the success rate in the `export_success_rate` function and training can begin. Specifically, DQNAgent is the NPC and IntructorAgent is the Reviewer. The NPC model will be saved in keras format.
+The configurations tested to train the NPC are located in the `HeRoN` folder. Once the LLM has been set up for Helper and the Reviewer model has been entered, change the names of the graphs in the `plot_training` function and the name of the CSV file relating to the success rate in the `export_success_rate` function and training can begin. Specifically, DQNAgent is the NPC and IntructorAgent is the Reviewer. The NPC model will be saved in keras format.
 
 ### Testing NPC
 To test the trained NPC, use the `testing_model.py` file, enter the model name (i.e. ‘npc_model’) in the DQNAgent string, change the names of the graphs in the `plot_training` function, and start testing.
