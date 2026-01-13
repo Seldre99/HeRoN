@@ -103,11 +103,18 @@ class PPOAgent:
         grads = tape.gradient(value_loss, self.critic.trainable_variables)
         self.critic_opt.apply_gradients(zip(grads, self.critic.trainable_variables))
 
-    def act_deterministic(self, state, action_mask):
-        probs = self.actor(state).numpy()[0]
-        probs = probs * action_mask
-        probs /= np.sum(probs)
-        return np.argmax(probs)
+def act_deterministic(self, state, action_mask):
+    probs = self.actor(state).numpy()[0]
+    probs = np.nan_to_num(probs, nan=0.0, posinf=0.0, neginf=0.0)
+    probs = probs * action_mask
+
+    total = np.sum(probs)
+    if total <= 1e-8:
+        valid_actions = np.where(action_mask == 1)[0]
+        return np.random.choice(valid_actions)
+
+    probs /= total
+    return np.argmax(probs)
 
     def save(self, path):
         os.makedirs(path, exist_ok=True)
