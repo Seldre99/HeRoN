@@ -43,7 +43,7 @@ def updage_quantity(action, mp_player):
 def calculate_scores(hp, mp, hp_nemico):
     hp_max = 3260
     mp_max = 132
-    hp_nemico_max = 4000
+    hp_nemico_max = 5000
 
     score_dict = {}
 
@@ -57,14 +57,12 @@ def calculate_scores(hp, mp, hp_nemico):
         danno_effettivo = min(a.get('damage', 0), hp_nemico)
         cura_effettiva = min(a.get('heal', 0), hp_max - hp)
         recupero_mp = a.get('mp_heal', 0)
-        penalità_quantità = 1 / (a['quantity'] + 1)
 
         # Dynamic weights
         p_danno = 1.0 + (1 - hp_nemico / hp_nemico_max)
         p_cura = 2.0 if hp < 0.3 * hp_max else 0.1
         p_mp = 1.5 if mp < 25 else 0.1
         p_costo_mp = 0.4
-        p_quantità = 3.0
 
         # Score
         efficacia = (
