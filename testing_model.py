@@ -161,8 +161,9 @@ if __name__ == "__main__":
     hielixer = Item("MegaElixer", "elixer", "Fully restores party's HP/MP", 9999)
     grenade = Item("Grenade", "attack", "Deals 500 damage", 500)
 
-    # Train the agent
+    # Test the agent
     rewards, agent_wins, enemy_wins, moves, success_rate, match = test_dqn(episodes=1000)
     plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, match)
 
     export_success_rate(success_rate)
+
