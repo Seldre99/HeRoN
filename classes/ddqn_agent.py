@@ -70,29 +70,36 @@ class DDQNAgent:
 
         return np.argmax(act_values)
 
-    def replay(self, batch_size, env):
-        minibatch = random.sample(self.memory, batch_size)
-        valid_actions = env.get_valid_actions()
-        for state, action, reward, next_state, done in minibatch:
-            target = reward
-            if not done:
-                if len(valid_actions) < 9:
-                    act_values = self.model.predict(state)[0]
-                    masked_q_values = np.full_like(act_values, -np.inf)
-                    masked_q_values[valid_actions] = act_values[valid_actions]
-                    target += self.gamma * self.target_model.predict(next_state, verbose=0)[0][masked_q_values]
-                else:
-                    act_values = self.model.predict(state)[0]
-                    target += self.gamma * self.target_model.predict(next_state, verbose=0)[0][act_values]
-            target_f = self.model.predict(state)
-            target_f[0][action] = target
-            self.model.fit(state, target_f, epochs=1, verbose=0)
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
+def replay(self, batch_size, env):
+    minibatch = random.sample(self.memory, batch_size)
 
-        self.train_step += 1
-        if self.train_step % self.target_update_freq == 0:
-            self.update_target_model()
+    for state, action, reward, next_state, done in minibatch:
+        target = reward
+
+        if not done:
+            valid_actions = env.get_valid_actions()
+
+            next_q_online = self.model.predict(next_state, verbose=0)[0]
+            masked_next_q = np.full_like(next_q_online, -np.inf)
+            masked_next_q[valid_actions] = next_q_online[valid_actions]
+
+            next_action = np.argmax(masked_next_q)
+
+            target += self.gamma * self.target_model.predict(
+                next_state, verbose=0
+            )[0][next_action]
+
+        target_f = self.model.predict(state, verbose=0)
+        target_f[0][action] = target
+
+        self.model.fit(state, target_f, epochs=1, verbose=0)
+
+    if self.epsilon > self.epsilon_min:
+        self.epsilon *= self.epsilon_decay
+
+    self.train_step += 1
+    if self.train_step % self.target_update_freq == 0:
+        self.update_target_model()
 
     def save(self, path_prefix):
         self.model.save(f"/{path_prefix}.keras") # enter model path
