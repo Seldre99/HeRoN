@@ -19,10 +19,13 @@ class DQNAgent:
         self.epsilon_min = 0.01 # 0.05
         self.epsilon_decay = 0.995
         self.learning_rate = 0.001
+        self.target_update_freq = 10
+        self.train_step = 0
         if load_model_path:
             self.load(load_model_path)
         else:
             self.model = self._build_model()
+            self.target_model = self._build_model()
 
     def _build_model(self):
         model = Sequential()
@@ -30,15 +33,15 @@ class DQNAgent:
         model.add(Dense(128, activation='relu'))
         model.add(Dense(64, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
-        #model = Sequential()
-        #model.add(Dense(24, input_dim=self.state_size, activation='relu'))
-        #model.add(Dense(24, activation='relu'))
-        #model.add(Dense(self.action_size, activation='linear'))
         model.compile(loss='mse', optimizer=Adam(learning_rate=self.learning_rate))
         return model
 
+    def update_target_model(self):
+        self.target_model.set_weights(self.model.get_weights())
+
     def load(self, path_prefix):
         self.model = load_model(f"/{path_prefix}.keras") # enter model path
+        self.target_model = load_model(f"/{path_prefix}.keras")
         memory_path = f"/{path_prefix}_memory.pkl" # enter model path
         if os.path.exists(memory_path):
             with open(memory_path, 'rb') as f:
@@ -49,32 +52,43 @@ class DQNAgent:
 
     def act(self, state, env):
         valid_actions = env.get_valid_actions()
+        state = state.reshape(1, -1)
         if np.random.rand() <= self.epsilon:
             return random.choice(valid_actions)
-        act_values = self.model.predict(state)[0]  # shape: (9,)
-        if len(valid_actions) < 9:
-            masked_q_values = np.full_like(act_values, -np.inf)  
-            masked_q_values[valid_actions] = act_values[valid_actions] 
-            return np.argmax(masked_q_values)
+        q_values = self.model.predict(state, verbose=0)[0]
+        masked_q = np.full(self.action_size, -np.inf)
+        masked_q[valid_actions] = q_values[valid_actions]
+        return int(np.argmax(masked_q))
 
-        return np.argmax(act_values)
 
     def replay(self, batch_size, env):
+        if len(self.memory) < batch_size:
+            return
         minibatch = random.sample(self.memory, batch_size)
-        valid_actions = env.get_valid_actions()
+        states = []
+        targets = []
         for state, action, reward, next_state, done in minibatch:
-            target = reward
-            if not done:
-                if len(valid_actions) < 9:
-                    act_values = self.model.predict(state)[0]
-                    masked_q_values = np.full_like(act_values, -np.inf)
-                    masked_q_values[valid_actions] = act_values[valid_actions]
-                    target = (reward + self.gamma * np.amax(masked_q_values))
-                else:
-                    target = (reward + self.gamma * np.amax(self.model.predict(next_state)[0]))
-            target_f = self.model.predict(state)
-            target_f[0][action] = target
-            self.model.fit(state, target_f, epochs=1, verbose=0)
+            state = state.reshape(1, -1)
+            next_state = next_state.reshape(1, -1)
+            target_q = self.model.predict(state, verbose=0)[0]
+            if done:
+                target_q[action] = reward
+            else:
+                valid_actions = env.get_valid_actions()
+                next_q = self.target_model.predict(next_state, verbose=0)[0]
+                masked_next_q = np.full(self.action_size, -np.inf)
+                masked_next_q[valid_actions] = next_q[valid_actions]
+                target_q[action] = reward + self.gamma * np.max(masked_next_q)
+
+            states.append(state[0])
+            targets.append(target_q)
+
+        self.model.fit(np.array(states), np.array(targets), epochs=1, verbose=0)
+
+        self.train_step += 1
+        if self.train_step % self.target_update_freq == 0:
+            self.update_target_model()
+
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
@@ -85,24 +99,6 @@ class DQNAgent:
         with open(f"/{path_prefix}_epsilon.txt", 'w') as f: # enter model path
             f.write(str(self.epsilon))
 
-'''
-    def replay(self, batch_size, env):
-        minibatch = random.sample(self.memory, batch_size)
-        for state, action, reward, next_state, done in minibatch:
-            target = reward
-            if not done:
-                valid_actions = env.get_valid_actions()
-                q_values_next = self.model.predict(next_state, verbose=0)[0]
-                filtered_q = [q_values_next[i] for i in valid_actions]
-                target = reward + self.gamma * max(filtered_q) if filtered_q else reward
-
-            target_f = self.model.predict(state, verbose=0)
-            target_f[0][action] = target
-            self.model.fit(state, target_f, epochs=1, verbose=0)
-
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
-'''
 
 
 
