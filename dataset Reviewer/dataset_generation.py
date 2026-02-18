@@ -11,7 +11,7 @@ actions = {
     'cura spell': {'damage': 0, 'mp_cost': 32, 'heal': 1500},
     'potion': {'damage': 0, 'mp_cost': 0, 'heal': 50},
     'grenade': {'damage': 500, 'mp_cost': 0, 'heal': 0},
-    'elixer': {'damage': 0, 'mp_cost': 0, 'heal': 'full'}
+    'elixir': {'damage': 0, 'mp_cost': 0, 'heal': 'full'}
 }
 
 
@@ -44,48 +44,66 @@ def generate_response(scenario):
     return f"The next action to take is [{action}]"
 
 
+def get_best_attack():
+    best = None
+    for action, info in actions.items():
+        if info["damage"] > 0:
+            if best is None or info["damage"] > actions[best]["damage"]:
+                best = action
+    return best
+
+
 def generate_instructions(scenario, response):
     player_hp = scenario['player_hp']
     player_mp = scenario['player_mp']
     enemy_hp = scenario['enemy_hp']
 
     if player_hp < 1000 and enemy_hp < 1000:
-        # If the player has enough mp, we recommend the best attack
-        best_attack = None
-        for action, info in scenario['available_actions'].items():
-            if info['damage'] > 0:
-                if best_attack is None or info['damage'] > actions[best_attack]['damage']:
-                    best_attack = action
+        best_attack = get_best_attack()
         if best_attack:
+            if response == best_attack:
+                return "The action taken seems reasonable given the current state."
             return f"Consider using [{best_attack}] for more damage."
-        else:
-            return "Use [attack] since you don't have enough MP."
-    elif player_hp < 800 and player_mp < 25:
-        if scenario['available_items']['elixer'] > 0:
-            return "You should use [elixer] to fully restore health and MP."
-        elif player_mp >= 32:
-            return "You should use [cura spell] to heal more HP."
-        elif scenario['available_items']['potion'] > 0:
-            return "You should use a [potion] to heal."
-    elif player_hp < 800:
-        if player_mp >= 32:
-            return "You should use [cura spell] to heal more HP."
-        elif scenario['available_items']['potion'] > 0:
-            return "You should use a [potion] to heal."
-        elif scenario['available_items']['elixer'] > 0:
-            return "You should use [elixer] to fully restore health and MP."
-
-    best_attack = None
-    for action, info in scenario['available_actions'].items():
-        if info['damage'] > 0:
-            if best_attack is None or info['damage'] > actions[best_attack]['damage']:
-                best_attack = action
-    if best_attack:
-        return f"Consider using [{best_attack}] for more damage."
-    else:
         return "Use [attack] since you don't have enough MP."
 
-    return "NaN"
+    # Low HP + low MP
+    if player_hp < 800 and player_mp < 25:
+        if items.get("elixer", 0) > 0:
+            if response == "elixir":
+                return "The action taken seems reasonable given the current state."
+            return "You should use [elixir] to fully restore health and MP."
+        if player_mp >= 32:
+            if response == "cura spell":
+                return "The action taken seems reasonable given the current state."
+            return "You should use [cura spell] to heal more HP."
+        if items.get("potion", 0) > 0:
+            if response == "potion":
+                return "The action taken seems reasonable given the current state."
+            return "You should use a [potion] to heal."
+
+    # Low HP only
+    if player_hp < 800:
+        if player_mp >= 32:
+            if response == "cura spell":
+                return "The action taken seems reasonable given the current state."
+            return "You should use [cura spell] to heal more HP."
+        if items.get("potion", 0) > 0:
+            if response == "potion":
+                return "The action taken seems reasonable given the current state."
+            return "You should use a [potion] to heal."
+        if items.get("elixer", 0) > 0:
+            if response == "elixir":
+                return "The action taken seems reasonable given the current state."
+            return "You should use [elixir] to fully restore health and MP."
+
+    # Default: attack recommendation
+    best_attack = get_best_attack()
+    if best_attack:
+        if response == best_attack:
+            return "The action taken seems reasonable given the current state."
+        return f"Consider using [{best_attack}] for more damage."
+
+    return "Use [attack] since you don't have enough MP."
 
 
 def generate_dataset(n=5000):
@@ -119,3 +137,4 @@ def save_dataset_to_csv(dataset, filename='game_scenarios_dataset_3.csv'):
 dataset = generate_dataset()
 
 save_dataset_to_csv(dataset)
+
