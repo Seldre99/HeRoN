@@ -32,7 +32,7 @@ def map_action(action):
     return None
 
 
-def train_ppo(episodes=1000):
+def train_ppo(episodes=1000, model_save):
     player_spells = [fire, thunder, blizzard, meteor, cura]
     player_items = [{"item": potion, "quantity": 3}, {"item": grenade, "quantity": 2},
                     {"item": hielixer, "quantity": 1}]
@@ -122,7 +122,7 @@ def train_ppo(episodes=1000):
     print("Average moves: ", np.mean(agent_moves_per_episode))
     print("Average move score: ", np.mean(action_scores))
 
-    agent.save("") # save the agent model
+    agent.save(model_save) # save the agent model
 
     return rewards_per_episode, agent_wins, enemy_wins, agent_moves_per_episode, success_rate, action_scores
 
@@ -208,6 +208,6 @@ if __name__ == "__main__":
     grenade = Item("Grenade", "attack", "Deals 500 damage", 500)
 
     # Train the agent
-    rewards, agent_wins, enemy_wins, moves, success_rate, match_score = train_ppo(episodes=1000)
+    rewards, agent_wins, enemy_wins, moves, success_rate, match_score = train_ppo(episodes=1000, model_save)
     plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, match_score)
     export_success_rate(success_rate)
