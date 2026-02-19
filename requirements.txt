@@ -1,0 +1,14 @@
+numpy
+pandas
+re
+lmstudio
+transformers
+torch
+csv
+os
+matplotlib
+random
+pickle
+tensorflow
+gym
+pygame
