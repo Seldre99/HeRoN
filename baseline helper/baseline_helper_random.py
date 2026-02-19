@@ -62,7 +62,7 @@ def map_action(action):
 
 
 
-def train_dqn(episodes, batch_size=32):
+def train_dqn(episodes, model_save, batch_size=32):
     #environment settings
     player_spells = [fire, thunder, blizzard, meteor, cura]
     player_items = [{"item": potion, "quantity": 3}, {"item": grenade, "quantity": 2},
@@ -174,7 +174,7 @@ def train_dqn(episodes, batch_size=32):
         action_scores.append(np.mean(match_score))
         mean_suggestion.append(suggestion)
 
-    agent.save("") # save the agent model
+    agent.save(model_save) # save the agent model
     print("Average rewards: ", np.mean(rewards_per_episode))
     print("Average moves: ", np.mean(agent_moves_per_episode))
     print("Average move score: ", np.mean(action_scores))
@@ -253,7 +253,8 @@ if __name__ == "__main__":
     grenade = Item("Grenade", "attack", "Deals 500 damage", 500)
 
     # Train the agent
-    rewards, agent_wins, enemy_wins, moves, success_rate, action_score = train_dqn(episodes=1000)
+    rewards, agent_wins, enemy_wins, moves, success_rate, action_score = train_dqn(episodes=1000, model_save="")
     plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, action_score)
 
     export_success_rate(success_rate)
+
