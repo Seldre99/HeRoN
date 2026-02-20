@@ -137,4 +137,3 @@ def save_dataset_to_csv(dataset, filename='game_scenarios_dataset_3.csv'):
 dataset = generate_dataset()
 
 save_dataset_to_csv(dataset)
-
