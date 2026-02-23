@@ -126,8 +126,8 @@ def train_dqn(episodes, model_save, batch_size=32):
                              "explain your reasoning briefly, max 50 words. /no_think"
 
                 with lms.Client() as client:
-                    model = client.llm.model("yi-34b-chat")  # Helper model
-                    llm_response = model.respond(input_text)
+                    model = client.llm.model("")  # Helper model
+                    llm_response = model.respond(input_text, config={"temperature": 0})
                     llm_response = str(llm_response)
                     llm_response = re.sub(r"<think>.*?</think>", "", llm_response, flags=re.DOTALL).strip()
                     print("NPC Response: ", llm_response)
@@ -137,7 +137,7 @@ def train_dqn(episodes, model_save, batch_size=32):
                     revise = f"Given the game state '{game_description}'. Your initial response was '{llm_response}'. Considering " \
                              f"this suggestion '{response}', rephrase your answer. Write only the chosen action in square brackets and explain your reasoning briefly, max 50 words. /no_think"
 
-                    new_llm_response = model.respond(revise) # Final Helper response
+                    new_llm_response = model.respond(revise, config={"temperature": 0}) # Final Helper response
 
                     new_llm_response = str(new_llm_response)
                     new_llm_response = re.sub(r"<think>.*?</think>", "", new_llm_response, flags=re.DOTALL).strip()
@@ -282,4 +282,5 @@ if __name__ == "__main__":
     plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, action_score)
 
     export_success_rate(success_rate)
+
 
