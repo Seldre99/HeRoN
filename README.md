@@ -52,5 +52,5 @@ To test the trained NPC, use the `testing_model.py` file, enter the model name (
 ## Purpose
 This repo is intended to serve as a foundation with which you can reproduce the results of the experiments detailed in our paper, recreate your own NPCs, and the ability to modify the JRPG environment.
 
-### 📖 Citation
+## 📖 Citation
 If you find our work helpful, we would appreciate if you cite it:
