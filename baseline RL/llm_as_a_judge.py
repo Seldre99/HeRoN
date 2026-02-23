@@ -115,7 +115,7 @@ def train_dqn(episodes, model_save, batch_size=32):
 
             with lms.Client() as client:
                 model = client.llm.model("") #change LLM
-                llm_response = model.respond(input_text)
+                llm_response = model.respond(input_text, config={"temperature": 0})
 
             llm_response = str(llm_response)
             llm_response = re.sub(r"<think>.*?</think>", "", llm_response, flags=re.DOTALL).strip()
