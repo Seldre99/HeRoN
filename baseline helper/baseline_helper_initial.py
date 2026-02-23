@@ -113,8 +113,8 @@ def train_dqn(episodes, model_save, batch_size=32):
 
 
                 with lms.Client() as client:
-                    model = client.llm.model("lmstudio-community/llama-3.3-70b-instruct") # Helper model
-                    llm_response = model.respond(input_text)
+                    model = client.llm.model("") # Helper model
+                    llm_response = model.respond(input_text, config={"temperature": 0})
 
                 llm_response = str(llm_response)
                 llm_response = re.sub(r"<think>.*?</think>", "", llm_response, flags=re.DOTALL).strip()
@@ -251,4 +251,5 @@ if __name__ == "__main__":
     plot_training(rewards, agent_wins, enemy_wins, moves, success_rate, action_score)
 
     export_success_rate(success_rate)
+
 
