@@ -15,7 +15,7 @@ HeRoN combines three components:
 * Reviewer: a lightweight, fine-tuned LLM that evaluates and refines the Helper’s suggestions, ensuring strategic consistency and alignment with game-specific constraints.
 
 ## 🧪 Evaluation Environments
-We test HeRoN across three domains:
+We test HeRoN across two domains:
 * 🎮 Custom Turn-Based Battle Environment
 * 🔫 FPS Environment: [ViZDoom](https://github.com/rosariopiognazzo/DoomHeron)
 
