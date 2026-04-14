@@ -17,7 +17,7 @@ HeRoN combines three components:
 ## 🧪 Evaluation Environments
 We test HeRoN across two domains:
 * 🎮 Custom Turn-Based Battle Environment
-* 🔫 FPS Environment: [ViZDoom](https://github.com/rosariopiognazzo/DoomHeron)
+* 🔫 FPS Environment: ViZDoom
 
 ## 🚀 Reproducibility Guide
 ### Requirements
