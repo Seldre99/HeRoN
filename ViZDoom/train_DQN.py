@@ -78,7 +78,7 @@ def call_helper_llm(game_state_desc, available_actions, scenario_name, plan_size
             {"role": "system", "content": "You are a tactical Doom AI. Output JSON only."},
             {"role": "user", "content": prompt}
         ],
-        "temperature": 0.2,
+        "temperature": 0.0,
         "max_tokens": 100,
         "stream": False
     }
