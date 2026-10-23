@@ -53,6 +53,7 @@ This repo is intended to serve as a foundation with which you can reproduce the 
 
 ## 📖 Citation
 If you find our work helpful, we would appreciate if you cite it:
+
 @article{cimino2026heron,
   title={HeRoN: a mediated RL-LLM framework for adaptive NPC behavior in interactive environments},
   author={Cimino, Gaetano and Deufemia, Vincenzo and Selice, Andrea},
